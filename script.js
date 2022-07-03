@@ -1,25 +1,43 @@
 //Global Variables
 const count=30;
-const apiKey='Your_API_KEY';
-const apiURL=`https://api.unsplash.com/photos/random/?client_id=${apiKey}&count=${count}`;
+const apiKey='nRqSvIKsyJB-Q-Av0WoJfWxG8j5kqknjICGZ-MB98C4';
+let apiURL;
 let photosArray=[];
 let isReadyToLoadNewImg=false;
 let imagesLoaded=0;
 let totalImages=0;
+let searchQuery;
 // Selectors
 
 const imageContainer=document.querySelector(".image-container");
 const loader=document.querySelector(".loader");
-const backToTop= document.querySelector("#back-to-top");
+const searchBar=document.querySelector("input");
+const noResDiv=document.querySelector(".no-response");
+
 // Event listeners
+
+searchBar.addEventListener("keydown",(e)=>{
+    if(e.key==="Enter"){
+        if(noResDiv.firstElementChild){
+            noResDiv.firstElementChild.remove();
+        }
+        const query=searchBar.value;
+        searchQuery=query;
+        apiURL=`https://api.unsplash.com/photos/random/?client_id=${apiKey}&count=${count}&query=${query}`;
+        searchBar.value="";
+        loader.hidden=false;
+        getPhotosFromAPI();
+        while(imageContainer.firstElementChild){
+            imageContainer.firstElementChild.remove();
+        }
+    }
+})
 
 window.addEventListener("scroll",()=>{
     if(window.innerHeight+window.scrollY >= document.body.offsetHeight-1000 && isReadyToLoadNewImg){
         getPhotosFromAPI();
         isReadyToLoadNewImg=false;
     }
-    if(loader.hidden)
-        backToTop.hidden= false;
 })
 
 // Function
@@ -61,13 +79,22 @@ function displayPhotos(){
 async function getPhotosFromAPI(){
     try{
         const response=await fetch(apiURL);
-        photosArray=await response.json();
-        displayPhotos();
+        if(!response.ok){
+            const noResText=document.createElement("h2");
+            noResText.textContent=`No result found for the search '${searchQuery}'.`
+            noResText.style.textAlign="center";
+            noResDiv.append(noResText);
+            loader.hidden=true;
+        }
+        else{
+            photosArray=await response.json();
+            // console.log(photosArray);
+            displayPhotos();
+        }
     }
     catch(error){
         //Catch error
+
     }
 }
 
-
-getPhotosFromAPI();
