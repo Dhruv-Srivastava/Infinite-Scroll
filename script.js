@@ -1,6 +1,6 @@
 //Global Variables
 const count=30;
-const apiKey='nRqSvIKsyJB-Q-Av0WoJfWxG8j5kqknjICGZ-MB98C4';
+const apiKey='Your APIKEY';
 let apiURL;
 let photosArray=[];
 let isReadyToLoadNewImg=false;
